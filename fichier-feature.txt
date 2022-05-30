@@ -1,2 +1,3 @@
 Je suis le fichier fearure txt
+Je suis une nouvelle ligne
 Je suis aussi une nouvelle ligne
