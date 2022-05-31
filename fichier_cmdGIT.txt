@@ -1,0 +1,500 @@
+  454  if [ "x$JBOSS_HOME" = "x" ]; then     JBOSS_HOME=$RESOLVED_JBOSS_HOME; else  SANITIZED_JBOSS_HOME=`cd "$JBOSS_HOME"; pwd`;  if [ "$RESOLVED_JBOSS_HOME" != "$SANITIZED_JBOSS_HOME" ]; then    echo "WARNING: The JBOSS_HOME ($SANITIZED_JBOSS_HOME) that this script uses points to a different installation than the one that this script resides in ($RESOLVED_JBOSS_HOME). Unpredictable results may occur.";    echo "";  fi; fi
+  455  export JBOSS_HOME
+  456  # Setup the JVM
+  457  if [ "x$JAVA" = "x" ]; then     if [ "x$JAVA_HOME" != "x" ]; then         JAVA="$JAVA_HOME/bin/java";     else         JAVA="java";     fi; fi
+  458  # Set default modular JVM options
+  459  setDefaultModularJvmOptions $JAVA_OPTS
+  460  JAVA_OPTS="$JAVA_OPTS $DEFAULT_MODULAR_JVM_OPTIONS"
+  461  if [ "x$JBOSS_MODULEPATH" = "x" ]; then     JBOSS_MODULEPATH="$JBOSS_HOME/modules"; fi
+  462  # For Cygwin, switch paths to Windows format before running java
+  463  if $cygwin; then     JBOSS_HOME=`cygpath --path --windows "$JBOSS_HOME"`;     JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`;     JBOSS_MODULEPATH=`cygpath --path --windows "$JBOSS_MODULEPATH"`; fi
+  464  # Sample JPDA settings for remote socket debugging
+  465  #JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=y"
+  466  # Uncomment to override standalone and domain user location  
+  467  #JAVA_OPTS="$JAVA_OPTS -Djboss.server.config.user.dir=../standalone/configuration -Djboss.domain.config.user.dir=../domain/configuration"
+  468  JAVA_OPTS="$JAVA_OPTS"
+  469  eval \"$JAVA\" $JAVA_OPTS          -jar \""$JBOSS_HOME"/jboss-modules.jar\"          -mp \""${JBOSS_MODULEPATH}"\"          org.jboss.as.domain-add-user          '"$@"'
+  470  #!/bin/sh
+  471  DIRNAME=`dirname "$0"`
+  472  GREP="grep"
+  473  . "$DIRNAME/common.sh"
+  474  # OS specific support (must be 'true' or 'false').
+  475  cygwin=false;
+  476  darwin=false;
+  477  case "`uname`" in     CYGWIN*)         cygwin=true;         ;;     Darwin*)         darwin=true;         ;; esac
+  478  # For Cygwin, ensure paths are in UNIX format before anything is touched
+  479  if $cygwin ; then     [ -n "$JBOSS_HOME" ] &&         JBOSS_HOME=`cygpath --unix "$JBOSS_HOME"`;     [ -n "$JAVA_HOME" ] &&         JAVA_HOME=`cygpath --unix "$JAVA_HOME"`;     [ -n "$JAVAC_JAR" ] &&         JAVAC_JAR=`cygpath --unix "$JAVAC_JAR"`; fi
+  480  # Setup JBOSS_HOME
+  481  RESOLVED_JBOSS_HOME=`cd "$DIRNAME/.."; pwd`
+  482  if [ "x$JBOSS_HOME" = "x" ]; then     JBOSS_HOME=$RESOLVED_JBOSS_HOME; else  SANITIZED_JBOSS_HOME=`cd "$JBOSS_HOME"; pwd`;  if [ "$RESOLVED_JBOSS_HOME" != "$SANITIZED_JBOSS_HOME" ]; then    echo "WARNING JBOSS_HOME may be pointing to a different installation - unpredictable results may occur.";    echo "";  fi; fi
+  483  export JBOSS_HOME
+  484  if [ "x$JBOSS_MODULEPATH" = "x" ]; then     JBOSS_MODULEPATH="$JBOSS_HOME/modules"; fi
+  485  # Setup the JVM
+  486  if [ "x$JAVA" = "x" ]; then     if [ "x$JAVA_HOME" != "x" ]; then         JAVA="$JAVA_HOME/bin/java";     else         JAVA="java";     fi; fi
+  487  # Set default modular JVM options
+  488  setDefaultModularJvmOptions $JAVA_OPTS
+  489  JAVA_OPTS="$JAVA_OPTS $DEFAULT_MODULAR_JVM_OPTIONS"
+  490  # For Cygwin, switch paths to Windows format before running java
+  491  if $cygwin; then     JBOSS_HOME=`cygpath --path --windows "$JBOSS_HOME"`;     JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`;     JBOSS_MODULEPATH=`cygpath --path --windows "$JBOSS_MODULEPATH"`; fi
+  492  if $darwin ; then     JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=com.apple.laf,com.apple.laf.resources"; else     JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=com.sun.java.swing"; fi
+  493  # Override ibm JRE behavior
+  494  JAVA_OPTS="$JAVA_OPTS -Dcom.ibm.jsse2.overrideDefaultTLS=true"
+  495  # Sample JPDA settings for remote socket debugging
+  496  #JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=n"
+  497  # WFCORE-5216 - evaluate any eventual env variables
+  498  JBOSS_MODULEPATH=$(eval echo \"${JBOSS_MODULEPATH}\")
+  499  LOG_CONF=`echo $JAVA_OPTS | grep "logging.configuration"`
+  500  if [ "x$LOG_CONF" = "x" ]; then     exec "$JAVA" $JAVA_OPTS -Dlogging.configuration=file:"$JBOSS_HOME"/bin/jboss-cli-logging.properties -jar "$JBOSS_HOME"/jboss-modules.jar -mp "${JBOSS_MODULEPATH}" org.jboss.as.cli "$@"; else     echo "logging.configuration already set in JAVA_OPTS";     exec "$JAVA" $JAVA_OPTS -jar "$JBOSS_HOME"/jboss-modules.jar -mp "${JBOSS_MODULEPATH}" org.jboss.as.cli "$@"; fi
+  501  mkdir projet1
+  502  cd projet1/
+  503  touch fichier1.txt
+  504  git init
+  505  git branch -M main
+  506  ls
+  507  ls -a
+  508  rm -rf .git/
+  509  ls -a
+  510  ls -a
+  511  git init
+  512  git status
+  513  clear
+  514  git status
+  515  git add .
+  516  git status
+  517  git rm --cached fichier1.txt 
+  518  git status
+  519  git add .
+  520  git checkout fichier1.txt
+  521  git status
+  522  git checkout fichier1.txt
+  523  git status
+  524  git rm --cached fichier1.txt 
+  525  git add .
+  526  clear
+  527  git status
+  528  git commit -m "first commit"
+  529  git branch -M main
+  530  git status
+  531  git log
+  532  git lola
+  533  git status
+  534  git commit -a -m "second commit"
+  535  git lola
+  536  git log
+  537  git log
+  538  clear
+  539  git reset --soft HEAD^1
+  540  git status
+  541  git restore --staged fichier1.txt
+  542  git status
+  543  git restore fichier1.txt
+  544  git lola
+  545  clear
+  546  git commit -a -m "second commit"
+  547  git reset --hard HEAD^1
+  548  git lola
+  549  git reset --soft HEAD^1
+  550  git reset --soft HEAD^2
+  551  git reset --hard 
+  552  git reset --hard HEAD^1
+  553  git status
+  554  git reset --hard HEAD^1
+  555  git lola
+  556  git reset --hard f72717e
+  557  git reset --soft f72717e
+  558  git status
+  559  git reset --soft HEAD^f72717e
+  560  git commit -a -m "add second lign"
+  561* 
+  562  git reset --soft HEAD^f72717e
+  563  git reset --soft HEAD~f72717e
+  564  git commit -a -m "add fichier2.txt"
+  565  git commit -a -m "add fichier2.txt"
+  566  git add .
+  567  git commit -m "add fichier2.txt"
+  568  git lola
+  569  git reset --soft HEAD~b311491
+  570  git reset -soft HEAD~b311491
+  571  git reset --soft HEAD~b311491
+  572  git reset --hard HEAD^b311491
+  573  git log
+  574  git reset --hard HEAD^b3114912b8f953725cefd9aba7bdb828c1b80e01
+  575  git reset --soft b3114912b8f953725cefd9aba7bdb828c1b80e01
+  576  git status
+  577  git reset --soft b3114912b8f953725cefd9aba7bdb828c1b80e01
+  578  git staus
+  579  git status
+  580  git commit -m "add fichier2.txt"
+  581  git reset --hard b3114912b8f953725cefd9aba7bdb828c1b80e01
+  582  git reset --hard f72717e3
+  583  git reflog
+  584  git diff master@{0} master@{1.hour.ago}
+  585  git diff main@{0} main@{1.minute.ago}
+  586  git diff main@{0} main@{10.minute.ago}
+  587  git diff
+  588  git diff --cached
+  589  git add .
+  590  git diff --cached
+  591  git commit -m "second commit"
+  592  git diff HEAD
+  593  git diff HEAD
+  594  git diff --cached
+  595  git lola
+  596  git reset --hard f72717e3
+  597  git add .
+  598  git commit -m "second commit"
+  599  git reset --soft f72717e3
+  600  git status
+  601  git commit -m "second commit"
+  602  git checkout c9f0381
+  603  git checkout main
+  604  gitg
+  605  git gui
+  606  git config --global user.email
+  607  git lola
+  608  git reset --hard c9f0381
+  609  clear
+  610  git branch
+  611  git checkout -b dev
+  612  git branch
+  613  ls 
+  614  cat fichier1.txt 
+  615  ls -a
+  616  git status
+  617  git commit -a -m "add fichier2.txt"
+  618  git commit -am "add fichier2.txt"
+  619  git add .
+  620  git commit -m "add fichier2.txt"
+  621  git status
+  622  git checkout main
+  623  git checkout dev
+  624  git checkout main
+  625  git merge dev
+  626  git branch
+  627  git branch dev
+  628  git checkout dev
+  629  git branch -d dev
+  630  git checkout main
+  631  git branch -d dev
+  632  git branch 
+  633  git checkout -b dev
+  634  git checkout main
+  635  git lola
+  636  git checkout dev
+  637  git add .
+  638  git commit -m "edit fichier2.txt"
+  639  git checkout main
+  640  git diff main dev
+  641  git diff main dev
+  642  git merge dev
+  643  git lola
+  644  git gui
+  645  git remote add origin https://github.com/Kyo-A/projet-git.git
+  646  git checkout main
+  647  git push -u origin main
+  648  git checkout dev
+  649  git push -u origin dev
+  650  git diff dev origin/dev
+  651  git diff origin dev
+  652  git branch main
+  653  git checkout main
+  654  git diff main origin/main
+  655  git fetch
+  656  git diff main origin/main
+  657  git pull
+  658  git fetch
+  659  git pull
+  660  git pull
+  661  git status
+  662  git restore fichier3.txt
+  663  git status
+  664  git pull
+  665  git status
+  666  git restore fichier3.txt
+  667  git checkout -b feature
+  668  touch fichier-feature-txt
+  669  git add .
+  670  git commit -m "add fichier-feature.txt"
+  671  git statu
+  672  git status
+  673  git checkout dev
+  674  git pull
+  675  git diff dev feature
+  676  git merge feature
+  677  git status
+  678  git push
+  679  git checkout -d feature
+  680  git checkout dev
+  681  git branch
+  682  git checkout -D feature
+  683  git branch -d feature
+  684  git add  .
+  685  git commit -m "Add new line fichier-feature.txt"
+  686  git push
+  687  git pull
+  688  git commit -m "conflict resolved"
+  689  git add .
+  690  git commit -m "conflict resolved"
+  691  git push
+  692  clear
+  693  git add .
+  694  git commit -m "Add new new line fichier-feature.txt / local"
+  695  git push
+  696  git pull
+  697  git add .
+  698  git commit -m "conflict resolved #2"
+  699  git push
+  700  git lola
+  701  git lola
+  702  clear
+  703  git commit -a -m "add fichier4.txt"
+  704  git commit -m "add fichier4.txt"
+  705  git add .
+  706  git commit -m "add fichier4.txt"
+  707  git push
+  708  git checkout -b bugfix
+  709  git add .
+  710  git commit -m "edit fichier4.txt"
+  711  git push -u origin bugfix
+  712  git branch dev
+  713  git checkout dev
+  714  git rebase bugfix
+  715  git checkout -d bugfix
+  716  git checkout dev
+  717  git branch -d bugfix
+  718  git checkout -b featurebranch
+  719  git add .
+  720  git commit -m "edit fichier-feature2.txt"
+  721  git push
+  722  git push -u origin featurebranch
+  723  git stati
+  724  git status
+  725  git add .
+  726  git commit -m "edit fichier-feature2.txt"
+  727  git push
+  728  git checkout dev
+  729  git push
+  730  git merge featurebranch
+  731  git push
+  732  git pull
+  733  git checkout main
+  734  git checkout dev
+  735  git branch
+  736  git checkout -b featurebranch
+  737  git branch --unset-upstream
+  738  git add .
+  739  git commit -m "edit fichier-feature2.txt"
+  740  git push
+  741  git push --set-upstream origin featurebranch
+  742  git checkout dev
+  743  git lola
+  744  git checkout -b bug
+  745  git add .
+  746  git commit -m "Bug fix"
+  747  git push -u origin bug
+  748  git checkout dev
+  749  git pull
+  750  git rebase bug
+  751  git add .
+  752  git commit -m "conflict resolved"
+  753  git push
+  754  git push origin dev
+  755  git push origin HEAD:dev
+  756  git pull
+  757  git pull origin dev
+  758  git fetch
+  759  git pull
+  760  git pull origin dev
+  761  git status
+  762  git rebase --continue
+  763  git add .
+  764  git status
+  765  git rebase --continue
+  766  git rebase --abort
+  767  clear
+  768  git reflog
+  769  git reflog show --all
+  770  git reflog show dev
+  771  git diff dev@{0} main@{10.minute.ago}
+  772  git diff dev@{0} dev@{10.minute.ago}
+  773  git diff dev@{0} main@{10.minute.ago}
+  774  git diff dev@{0} main@{10.hour.ago}
+  775  clear
+  776  git status
+  777  git checkout main
+  778  git status
+  779  git checkout dev
+  780  git lol
+  781  git lola
+  782  git tag v1.0.0
+  783  git log
+  784  git lola
+  785  git push
+  786  git pusg --tags
+  787  git push --tags
+  788  git lola
+  789  clear
+  790  git checkout featurebranch
+  791  touch contact.txt
+  792  git add .
+  793  git commit -m "add contact.txt"
+  794  git push
+  795  git checkout dev
+  796  git merge main
+  797  git pull
+  798  git branch -m featurebranch featureBranch
+  799  git branch -m featurebranch featureBranche
+  800  git branch
+  801  git push -u origin featureBranche
+  802  git push origin featurebranch
+  803  git push origin :featurebranch
+  804  clear
+  805  git branch -m featureBranche featurebranch
+  806  git push origin :featureBranche
+  807  git push -u origin featrurebranch
+  808  git push --set-upstream  origin featrurebranch
+  809  git push --set-upstream  origin featurebranch
+  810  git checkout featurebranch 
+  811  git status
+  812  git lola
+  813  git checkout dev
+  814  git pull
+  815  git branch -d featurebranch
+  816  git branch
+  817  git branch -d bug
+  818  git branch -D bug
+  819  git push -u origin :bug
+  820  cleat
+  821  clear
+  822  git tag v2.0.0
+  823  git lola
+  824  git push --tags
+  825  git push
+  826  git lola
+  827  git reset --hard HEAD^
+  828  git lola
+  829  git status
+  830  git pull
+  831  clear
+  832  git checkout -b bugfix
+  833  git status
+  834  git add .
+  835  git commit -m "contact.txt bug fixed"
+  836  git push -u origin bugfix
+  837  git lola
+  838  git checkout dev
+  839  git branch -d bugfix
+  840  git lola
+  841  clear
+  842  git branch
+  843  git checkout -b bugfix
+  844  git add .
+  845  git commit -m "contact.txt bug fixed"
+  846  git push -u origin bugfix
+  847  git checkout dev 
+  848  git pull
+  849  git checkout bugfix 
+  850  jit add .
+  851  git add .
+  852  git commit -m "contact.txt bug fixed"
+  853  git push
+  854  git status
+  855  git checkout dev
+  856  git status
+  857  git checkout main
+  858  git pull
+  859  git checkout dev
+  860  git merge main
+  861  git diff dev origin/dev
+  862  git diff dev origin/main
+  863  git diff dev main
+  864  git status
+  865  git push
+  866  git checkout bugfix 
+  867  git status
+  868  git add .
+  869  git commit -m "bugfixed"
+  870  git pull
+  871  git commit -m "bugfixed"
+  872  git checkout dev
+  873  git status
+  874  git merge bugfix
+  875  git status
+  876  git push
+  877  git branch -d bugfix
+  878  git push -u origin :bugfix
+  879  git reflog >> trace.txt
+  880  history
+  881  git blame contact.txt
+  882  git stash
+  883  git stash list
+  884  git stash pop [stash@{0}]
+  885  git stash pop stash@{0}
+  886  git restore contact.txt
+  887  git bisect start
+  888  git bisect visualize
+  889  git lola
+  890  git bisect good b7637b7
+  891  git bisect visualize
+  892  git bisect reset
+  893  git add .
+  894  git commit -m "edit contact"
+  895  git push
+  896  git add .
+  897  git commit -m "edit contact2"
+  898  git push
+  899  git add .
+  900  git commit -m "edit contact3"
+  901  git push
+  902  git lola
+  903  git bisect start
+  904  git bisect bad a05bb75
+  905  git bisect good 619b954
+  906  git bisect visualize
+  907  git bisect reset
+  908  git grep -f co*.txt
+  909  git grep -e 'hello'
+  910  git grep -e 'je'
+  911  git grep -e 'suis'
+  912  git grep -i 'suis' $(git rev-list --all)
+  913  git commit -a -m "add demo.sh"
+  914  git add .
+  915  git commit -m "add demo.sh"
+  916  git push
+  917  git add .
+  918  git push
+  919  git commit -m "edit demo.sh"
+  920  git push
+  921  git add .
+  922  git commit -m "edit demo.sh 2"
+  923  git push
+  924  git lola
+  925  git show 45f75d6:demo.sh
+  926  git bisect start
+  927  git bisect bad
+  928  git bisect good 45f75d6
+  929  git bisect start HEAD 45f75d6
+  930  git show 36a15a1:demo.sh
+  931  git add .
+  932  git commit -m "deleted demo.sh"
+  933  git push
+  934  git lola
+  935  git cherry-pick 36a15a1
+  936  git add .
+  937  git status
+  938  git cherry-pick --continue
+  939  git lola
+  940  git status
+  941  git push
+  942  git add .
+  943  git commit -m "deleted demo.sh"
+  944  git push
+  945  git diff --oneline --graph main..dev
+  946  git format-patch main
+  947  git status
+  948  clear
+  949  history
+  950  history >> fichier_cmdGIt.txt
+  951  git reflog
+  952* 
+  953  history >> fichier_cmdGIt.txt
